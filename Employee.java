@@ -1,13 +1,17 @@
+/**
+ * The Employee class represents an employee in the system.
+ * It encapsulates employee attributes like ID, name, SSN, job title, division, salary, and hire date.
+ */
 public class Employee {
-    private int empId;
-    private String name;
-    private String ssn;
-    private String jobTitle;
-    private String division;
-    private double salary;
-    private String hireDate;
+    private int empId; // Unique identifier for the employee
+    private String name; // Full name of the employee
+    private String ssn; // Social Security Number (SSN) of the employee
+    private String jobTitle; // Job title of the employee
+    private String division; // Division where the employee works
+    private double salary; // Salary of the employee
+    private String hireDate; // Hire date of the employee in YYYY-MM-DD format
 
-    // Constructor
+    // Constructor to initialize the Employee object with all attributes
     public Employee(int empId, String name, String ssn, String jobTitle, String division, double salary, String hireDate) {
         this.empId = empId;
         this.name = name;
@@ -18,7 +22,8 @@ public class Employee {
         this.hireDate = hireDate;
     }
 
-    // Getters and Setters
+    // Getter and Setter methods for each attribute to access and modify them
+
     public int getEmpId() { return empId; }
     public void setEmpId(int empId) { this.empId = empId; }
 
@@ -40,9 +45,11 @@ public class Employee {
     public String getHireDate() { return hireDate; }
     public void setHireDate(String hireDate) { this.hireDate = hireDate; }
 
+    // Overriding the toString method to provide a readable representation of an Employee object
     @Override
     public String toString() {
-        return "Employee [ID=" + empId + ", Name=" + name + ", SSN=" + ssn + ", Job Title=" + jobTitle +
-               ", Division=" + division + ", Salary=" + salary + ", Hire Date=" + hireDate + "]";
+        return "Employee [ID=" + empId + ", Name=" + name + ", SSN=" + ssn + 
+               ", Job Title=" + jobTitle + ", Division=" + division + 
+               ", Salary=" + salary + ", Hire Date=" + hireDate + "]";
     }
 }
