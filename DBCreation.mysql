@@ -1,0 +1,36 @@
+-- Create Database
+CREATE DATABASE EmployeeManagement;
+
+-- Use Database
+USE EmployeeManagement;
+
+-- Create employees table
+CREATE TABLE employees (
+    emp_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    ssn CHAR(9) NOT NULL UNIQUE,
+    job_title VARCHAR(50) NOT NULL,
+    division VARCHAR(50) NOT NULL,
+    salary DECIMAL(10, 2) NOT NULL,
+    hire_date DATE NOT NULL
+);
+
+-- Create pay_statements table
+CREATE TABLE pay_statements (
+    statement_id INT AUTO_INCREMENT PRIMARY KEY,
+    emp_id INT NOT NULL,
+    statement_date DATE NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (emp_id) REFERENCES employees(emp_id) ON DELETE CASCADE
+);
+
+-- Insert Sample Data
+INSERT INTO employees (name, ssn, job_title, division, salary, hire_date)
+VALUES 
+    ('Alice Johnson', '123456789', 'Software Engineer', 'IT', 70000.00, '2022-01-15'),
+    ('Bob Smith', '987654321', 'HR Manager', 'HR', 65000.00, '2021-10-20');
+
+INSERT INTO pay_statements (emp_id, statement_date, amount)
+VALUES 
+    (1, '2024-11-01', 5833.33),
+    (2, '2024-11-01', 5416.67);
