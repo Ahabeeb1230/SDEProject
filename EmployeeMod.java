@@ -1,126 +1,66 @@
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The EmployeeMod class provides methods to interact with the employees table in the database.
- * It includes operations for adding, retrieving, updating, and deleting employee records.
+ * The EmployeeMod class manages the list of employees and provides operations for adding,
+ * updating, deleting, and retrieving employee information.
  */
 public class EmployeeMod {
+    private static List<Employee> employeeList = new ArrayList<>();
 
-    /**
-     * Adds a new employee record to the database.
-     *
-     * @param employee The Employee object containing the details to add.
-     * @throws SQLException If a database error occurs.
-     */
-    public void addEmployee(Employee employee) throws SQLException {
-        String query = "INSERT INTO employees (name, ssn, job_title, division, salary, hire_date) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DatabaseHelper.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            // Set parameters for the SQL query
-            stmt.setString(1, employee.getName());
-            stmt.setString(2, employee.getSsn());
-            stmt.setString(3, employee.getJobTitle());
-            stmt.setString(4, employee.getDivision());
-            stmt.setDouble(5, employee.getSalary());
-            stmt.setString(6, employee.getHireDate());
-            stmt.executeUpdate(); // Execute the query
-        }
+    // Add a new employee
+    public static void addEmployee(Employee employee) {
+        employeeList.add(employee);
     }
 
-    /**
-     * Retrieves an employee record by their ID.
-     *
-     * @param empId The ID of the employee to retrieve.
-     * @return The Employee object if found, otherwise null.
-     * @throws SQLException If a database error occurs.
-     */
-    public Employee getEmployeeById(int empId) throws SQLException {
-        String query = "SELECT * FROM employees WHERE emp_id = ?";
-        try (Connection conn = DatabaseHelper.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, empId); // Set the employee ID in the query
-            try (ResultSet rs = stmt.executeQuery()) { // Execute the query and get results
-                if (rs.next()) {
-                    // Create an Employee object from the retrieved data
-                    return new Employee(
-                        rs.getInt("emp_id"),
-                        rs.getString("name"),
-                        rs.getString("ssn"),
-                        rs.getString("job_title"),
-                        rs.getString("division"),
-                        rs.getDouble("salary"),
-                        rs.getString("hire_date")
-                    );
-                }
+    // Retrieve all employees
+    public static List<Employee> getAllEmployees() {
+        return employeeList;
+    }
+
+    // Search employees by a query
+    public static List<Employee> searchEmployees(String query) {
+        List<Employee> results = new ArrayList<>();
+        for (Employee emp : employeeList) {
+            if (emp.matches(query)) {
+                results.add(emp);
             }
         }
-        return null; // Return null if no record is found
+        return results;
     }
 
-    /**
-     * Updates an existing employee record in the database.
-     *
-     * @param employee The Employee object containing updated details.
-     * @throws SQLException If a database error occurs.
-     */
-    public void updateEmployee(Employee employee) throws SQLException {
-        String query = "UPDATE employees SET name = ?, ssn = ?, job_title = ?, division = ?, salary = ?, hire_date = ? WHERE emp_id = ?";
-        try (Connection conn = DatabaseHelper.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            // Set parameters for the SQL query
-            stmt.setString(1, employee.getName());
-            stmt.setString(2, employee.getSsn());
-            stmt.setString(3, employee.getJobTitle());
-            stmt.setString(4, employee.getDivision());
-            stmt.setDouble(5, employee.getSalary());
-            stmt.setString(6, employee.getHireDate());
-            stmt.setInt(7, employee.getEmpId());
-            stmt.executeUpdate(); // Execute the query
-        }
-    }
-
-    /**
-     * Deletes an employee record from the database by their ID.
-     *
-     * @param empId The ID of the employee to delete.
-     * @throws SQLException If a database error occurs.
-     */
-    public void deleteEmployee(int empId) throws SQLException {
-        String query = "DELETE FROM employees WHERE emp_id = ?";
-        try (Connection conn = DatabaseHelper.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, empId); // Set the employee ID in the query
-            stmt.executeUpdate(); // Execute the query
-        }
-    }
-
-    /**
-     * Retrieves all employee records from the database.
-     *
-     * @return A list of Employee objects representing all employees.
-     * @throws SQLException If a database error occurs.
-     */
-    public List<Employee> getAllEmployees() throws SQLException {
-        String query = "SELECT * FROM employees";
-        List<Employee> employees = new ArrayList<>(); // List to store retrieved employees
-        try (Connection conn = DatabaseHelper.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) { // Execute the query and get results
-            while (rs.next()) {
-                // Add each retrieved employee to the list
-                employees.add(new Employee(
-                    rs.getInt("emp_id"),
-                    rs.getString("name"),
-                    rs.getString("ssn"),
-                    rs.getString("job_title"),
-                    rs.getString("division"),
-                    rs.getDouble("salary"),
-                    rs.getString("hire_date")
-                ));
+    // Find an employee by ID
+    public static Employee findById(int id) {
+        for (Employee emp : employeeList) {
+            if (emp.getEmpId() == id) {
+                return emp;
             }
         }
-        return employees; // Return the list of employees
+        return null;
+    }
+
+    // Update an employee's details
+    public static boolean updateEmployee(int empId, String newName, String newDivision) {
+        Employee emp = findById(empId);
+        if (emp != null) {
+            if (newName != null && !newName.isEmpty()) emp.setName(newName);
+            if (newDivision != null && !newDivision.isEmpty()) emp.setDivision(newDivision);
+            return true;
+        }
+        return false;
+    }
+
+    // Update salary for employees within a specific range
+    public static void updateSalary(double minSalary, double maxSalary, double percentageIncrease) {
+        for (Employee emp : employeeList) {
+            if (emp.getSalary() >= minSalary && emp.getSalary() <= maxSalary) {
+                emp.setSalary(emp.getSalary() + emp.getSalary() * (percentageIncrease / 100));
+            }
+        }
+    }
+
+    // Delete an employee by ID
+    public static boolean removeEmployee(int empId) {
+        return employeeList.removeIf(emp -> emp.getEmpId() == empId);
     }
 }
